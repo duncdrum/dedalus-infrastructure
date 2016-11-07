@@ -1,0 +1,91 @@
+#
+# Root Vagrant file
+#
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "coreos-beta"
+  config.vm.box_version = ">= 308.0.1"
+  config.vm.box_url = "http://beta.release.core-os.net/amd64-usr/current/coreos_production_vagrant.json"
+
+  # web server
+  config.vm.network :forwarded_port, guest: 80, host: 8000
+
+  # postgresql server
+  config.vm.network :forwarded_port, guest: 5432, host: 5432
+
+  # rabbitmq server
+  #config.vm.network :forwarded_port, guest: 5672, host: 5672
+
+  # existdb server
+  config.vm.network :forwarded_port, guest: 8080, host: 8080
+
+  # fuseki server
+  config.vm.network :forwarded_port, guest: 3030, host: 3030
+
+  # cache server (memcached)
+  config.vm.network :forwarded_port, guest: 11211, host: 11211
+
+  # rabbitmq management
+  config.vm.network :forwarded_port, guest: 15672, host: 15672
+
+  # Julia notebook
+  config.vm.network :forwarded_port, guest: 8998, host: 8998
+
+  # Solr search
+  config.vm.network :forwarded_port, guest: 8983, host: 8983
+
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = true
+    vb.customize ["modifyvm", :id, "--memory", "2500"]
+  end
+
+  # setup base system
+  config.vm.provision "shell",
+    path: "scripts/provision-setup.sh"
+
+  # remove running docker containers
+  config.vm.provision "shell",
+    path: "scripts/clean-docker.sh"
+
+  # build exist-db container
+  config.vm.provision "shell",
+    path: "scripts/provision-existdb.sh"
+
+  # build postgres container
+  config.vm.provision "shell",
+    path: "scripts/provision-postgres.sh"
+
+  # build fuseki container
+  config.vm.provision "shell",
+    path: "scripts/provision-fuseki.sh"
+
+  # run rabbitmq container
+  config.vm.provision "shell",
+    path: "scripts/provision-celery.sh"
+
+  # build julia container
+  config.vm.provision "shell",
+    path: "scripts/provision-julia.sh"
+
+  # run solr container
+  config.vm.provision "shell",
+    path: "scripts/provision-solr.sh"
+
+  # build django container
+  config.vm.provision "shell",
+    path: "scripts/provision-django.sh"
+
+  # build UIMA worker container
+  config.vm.provision "shell",
+    path: "scripts/provision-uima-worker.sh"
+
+  # build UIMA plain worker container
+  config.vm.provision "shell",
+    path: "scripts/provision-uima-plain-worker.sh"
+
+  # build console container
+  config.vm.provision "shell",
+    path: "scripts/provision-console.sh"
+end

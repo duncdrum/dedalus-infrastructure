@@ -23,9 +23,7 @@ kde-open http://localhost:8000
 
 What happens
 ------------
-* An Ubuntu 13.10 (Saucy) image will be downloaded (300 MB)
-* [Docker](http://www.docker.io/) will be installed
-* A docker base image [0xffea/saucy...](https://index.docker.io/u/0xffea/saucy-server-cloudimg-amd64/) (90 MB) will be downloaded
+* An Ubuntu 14.04 image will be downloaded
 * [Django](https://www.djangoproject.com/) container will be build and started. Public port 80
 * [Postgres](http://www.postgresql.org/) container will be build and started. Public port 5432
 * An eXist-db base image [](https://index.docker.io/u/0xffea/saucy-server-existdb-amd64/) (440 MB) will be downloaded
@@ -35,7 +33,7 @@ What happens
 Tested under
 ------------
 * Windows 7
-* Ubuntu 13.10
+* Ubuntu 14.04
 
 Stay hungry. Stay foolish.
 --------------------------
@@ -45,3 +43,17 @@ vagrant suspend
 vagrant resume
 vagrant provision
 ```
+
+Load XML into ExistDB
+---------------------
+Log into the running container named 'control'
+```shell
+docker attach control
+```
+and then run the script to load the XML data.
+```shell
+cd /docker/roche-website
+source roche/scripts/server-deploy.sh
+python roch/scripts/xml-load.py
+```
+log out of the container with '^P^Q'. PLEASE DONT USE exit or ^D, as this will kill the container.
